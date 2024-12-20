@@ -135,6 +135,19 @@
             border: 1px solid #ccc;
         }
 
+
+        @media (max-width: 500px) {
+            .calendar-fields {
+                width: 100%;
+                display: inline-flex;
+            
+            }
+
+            .titles-of-calendars {
+                width: 120px;
+            }
+        }
+
         .titles {
             font-size: 1em;
             margin-bottom: 5px;
@@ -158,6 +171,12 @@
             display: flex;
             justify-content: space-between;
             text-align: left;
+        }
+
+        @media (max-width: 600px) {
+            .cc {
+                flex-direction: column;
+            }
         }
 
         button {
@@ -200,6 +219,7 @@
             margin-top: 20px;
             width: 60%;
             justify-items: center;
+            flex-wrap: wrap;
         }
 
         .finalButtons button {
@@ -257,7 +277,7 @@
         .date-container {
             display: flex;
             align-items: baseline;
-            gap: 2rem; /* Added space of 2rem */
+            flex-wrap: wrap;
         }
 
         /* Making the date input shorter */
@@ -272,10 +292,6 @@
     animation: tickBeat infinite 1s;
 }
 
-/* .tick img {
-    width: 250px;
-    animation: tickBeat infinite 1s;
-} */
 
 @keyframes tickBeat {
     0% {
@@ -357,25 +373,6 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 @media print {
     body {
         margin: 0;
@@ -427,13 +424,6 @@
 
 
 
-
-
-
-
-
-
-
     </style>
 </head>
 
@@ -455,37 +445,35 @@
             <div class="enter">
                 <div class="left-align">
                     <div class="date-container">
-                        <span class="titles">Date:</span>
-                        <input type="date" id="date"><br />
-
-                        <span class="titles">Payment term:</span>
-                        <input type="date" id="payment-term"><br />
+                        <span class="calendar-fields">
+                            <span class="titles-of-calendars">Date:</span>
+                            <input type="date" id="date" class="calendar"><br />
+                        </span>
+                        <span class="calendar-fields">
+                            <span class="titles-of-calendars">Payment term:</span>
+                            <input type="date" id="payment-term" class="calendar"><br /> 
+                        </span>
+                        
+                        
                     </div>
                 </div>
                 <div class="cc">
                     <div class="company">
                         <h2 style="color: #d22d21;">Service</h2>
                         <hr>
-                        <span class="titles"></span>
                         <input type="text" id="company-name" placeholder="Enter seller name"><br />
-                        <span class="titles"></span>
                         <input type="text" id="company-address" placeholder="Enter seller address"><br />
-                        <span class="titles"></span>
                         <input type="text" id="company-email-address" placeholder="Enter seller email address"><br />
-                        <span class="titles"></span>
                         <input type="text" id="company-phone" placeholder="Enter seller phone nr"><br />
                     </div>
 
                     <div class="client">
                         <h2 style="color: rgb(45, 112, 115);">Client</h2>
                         <hr>
-                        <span class="titles"></span>
+                        
                         <input type="text" id="client-name" placeholder="Enter buyer name"><br />
-                        <span class="titles"></span>
                         <input type="text" id="client-address" placeholder="Enter buyer address"><br />
-                        <span class="titles"></span>
                         <input type="text" id="client-email-address" placeholder="Enter buyer email address"><br />
-                        <span class="titles"></span>
                         <input type="text" id="client-phone" placeholder="Enter buyer phone nr"><br />
                     </div>
                 </div>
@@ -534,11 +522,7 @@
                 </div>
             </div>
             <main>
-                <section class="container">
-                    <!-- <h1><span>Let's</span>click</h1>
-                    <p>Click button below</p>
-                    <button class="btn">BillPrintPreviewer</button> -->
-                </section>
+               
         
                 <section class="modal">
                     <div class="modalContent">
@@ -605,23 +589,40 @@
             });
         }
 
+        function updateRowNumbers() {
+            const rows = document.querySelectorAll('#purchase-list tbody tr');
+            rows.forEach((row, index) => {
+                const cell = row.querySelector('.purchase-id');
+                if (cell) {
+                    cell.textContent = index + 1; // Atitinkamai atnaujina numerį
+                }
+            });
+        }
+
         document.querySelector('.list-next-purchase').addEventListener('click', () => {
             const newRow = document.createElement('tr');
             newRow.innerHTML = `
-                <td>${currentItemNumber++}</td>
+                <td class="purchase-id">${currentItemNumber++}</td>
                 <td><input type="text" class="description" placeholder="Enter item name"></td>
                 <td><input type="number" class="quantity" min="0" placeholder="Enter quantity"></td>
                 <td><input type="text" class="price" placeholder="0.00"></td>
                 <td><input type="number" class="discount" min="0" max="100" placeholder="0 %" step="0"></td>
                 <td><div class="subtotal">0.00</div></td>
+                <td><button class="list-remove-purchase">-</button></td>
             `;
             document.getElementById('list-body').appendChild(newRow);
+            newRow.querySelector(".list-remove-purchase").addEventListener("click", function () {
+                newRow.remove();
+                currentItemNumber--;
+                updateRowNumbers();
 
+            });
             addMoneyFormattingListeners();
 
             newRow.querySelectorAll('input').forEach(input => {
                 input.addEventListener('input', () => {
                     calculateSubtotal(newRow);
+
                 });
             });
         });
